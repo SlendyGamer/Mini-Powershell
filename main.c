@@ -1,23 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include "shell.h"
+#include "shell.h"
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
-    char *line = NULL;
-    size_t len = 0;
+    char *linha = NULL;  //linha que sera digitada pelo user
+    size_t tam_linha = 0;     //tamanho da linha digitada
 
     while (1)
     {
-        printf(">: ");
-        if(getline(&line, &len, stdin) == -1)
+        printf(">: ");  //texto simples por estetica, para indicar que o usuario pode digitar
+        if(getlinha(&linha, &tam_linha, stdin) == -1) //funcao getlinha recebe entradas de stdin e salva o que foi escrito e o numero de caracteres nas suas respectivas variaveis
         {
-            break;
+            break; //se houver algum erro ou for detectado EOF (crtl+d)
         }
-        //execute_cmd(line);
+        execute_cmd(linha); //redireciona o que foi digitado para os arquivos shell
     }
 
-    free(line);
+    free(linha);
     return 0;
 }

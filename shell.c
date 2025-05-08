@@ -7,25 +7,25 @@
 #include "builtins.h"
 #include "utils.h"
 
-void execute_cmd(char *line)
+void execute_cmd(char *linha)
 {
-    char **args = split_line(line, " \t\n");
-    if (args[0] == NULL)
+    char **args = divide_linha(linha, " \t\n"); //divide a linhad e comando digitada pelos espacos
+    if (args[0] == NULL)    //se a primeira palavra for nula, libera args e nao faz nada
     {
         free_tokens(args);
         return;
     }
 
-    if (is_buitin(args[0]))
+    if (is_builtin(args[0])) //se for cd, exit ou pwd, retorna 1
     {
-        execute_builtin(args);
+        execute_builtin(args);  //redireciona para os arquivos builtins para execucao
     }
-    else
+    else //se o comando for qualquer outro, cria um processo para executa-lo
     {
         pid_t pid = fork();
         if (pid == 0)
         {
-            execvp(args[0], args);
+            execvp(args[0], args); //executa o comando qualquer
             perror("execvp");
             exit(EXIT_FAILURE);
         }
