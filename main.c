@@ -10,7 +10,7 @@ int main(int argc, char **argv)
 
     while (1)
     {
-        printf(">: ");  //texto simples por estetica, para indicar que o usuario pode digitar
+        printf("\n>: ");  //texto simples por estetica, para indicar que o usuario pode digitar
         if(getline(&linha, &tam_linha, stdin) == -1) //funcao getlinha recebe entradas de stdin e salva o que foi escrito e o numero de caracteres nas suas respectivas variaveis
         {
             break; //se houver algum erro ou for detectado EOF (crtl+d)

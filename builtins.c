@@ -4,6 +4,8 @@
 #include <string.h>
 #include <dirent.h> 
 #include "builtins.h"
+#include "utils.h"
+#include <stdbool.h>
 
 int is_builtin(char *cmd) 
 {
@@ -48,29 +50,68 @@ void execute_builtin(char **args) //executa funcoes acima
         struct dirent *dir;
         d = opendir(".");
         int contador = 0;
+        FileInfo info;
+
+        bool flag_a = false;
+        bool flag_l = false;
+
+        for (int i=1; args[i] != NULL; i++)
+        {
+            if (strcmp(args[i], "-a") == 0)
+                flag_a = true;
+            if (strcmp(args[i], "-l") == 0)
+                flag_l = true;
+            if (strcmp(args[i], "-al") == 0 || strcmp(args[i], "-la") == 0)
+            {
+                flag_a = true;
+                flag_l = true;
+            }
+        }
         if (d)
         {
             while ((dir = readdir(d)) != NULL)
             {
-                if (dir->d_name[0] == '.')
+                if (dir->d_name[0] == '.' && flag_a) //invisivel e -a
                 {
-                    if ((args[1] != NULL && strcmp(args[1], "-a") == 0) || (args[2] != NULL && strcmp(args[2], "-a") == 0))
+                    if (flag_l)
+                    {
+                        info = getFileInfo(dir->d_name);//invisivel e -a -l
+                        printf("%s %2ld %s %s %5ld %s %s\n",
+                                info.permissions,
+                                info.links,
+                                info.owner,
+                                info.group,
+                                info.size,
+                                info.mod_time,
+                                info.name);
+                    }
+                    else //invisivel e -a
                     {
                         printf("%s\t", dir->d_name);
+                        contador++;
                     }
                 }
-                else
+                else if (flag_l)//visivel e -l (tanto faz se for -a ou nao)
                 {
-                    printf("%s\t", dir->d_name); 
+                    info = getFileInfo(dir->d_name);
+                    printf("%s %2ld %s %s %5ld %s %s\n",
+                            info.permissions,
+                            info.links,
+                            info.owner,
+                            info.group,
+                            info.size,
+                            info.mod_time,
+                            info.name);
                 }
+                else //visivel
+                {
+                    printf("%s\t", dir->d_name);
+                    contador++;
+                }                    
                 if (contador == 5)
                 {
                     printf("\n");
                     contador = 0;
-                }
-                else
-                {
-                    contador++;
                 }
             }
         }
