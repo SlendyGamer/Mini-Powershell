@@ -71,24 +71,27 @@ void execute_builtin(char **args) //executa funcoes acima
         {
             while ((dir = readdir(d)) != NULL)
             {
-                if (dir->d_name[0] == '.' && flag_a) //invisivel e -a
+                if (dir->d_name[0] == '.') //invisivel
                 {
-                    if (flag_l)
+                    if(flag_a) //invisivel e -a
                     {
-                        info = getFileInfo(dir->d_name);//invisivel e -a -l
-                        printf("%s %2ld %s %s %5ld %s %s\n",
-                                info.permissions,
-                                info.links,
-                                info.owner,
-                                info.group,
-                                info.size,
-                                info.mod_time,
-                                info.name);
-                    }
-                    else //invisivel e -a
-                    {
-                        printf("%s\t", dir->d_name);
-                        contador++;
+                        if (flag_l)
+                        {
+                            info = getFileInfo(dir->d_name);//invisivel e -a -l
+                            printf("%s %2ld %s %s %5ld %s %s\n",
+                                    info.permissions,
+                                    info.links,
+                                    info.owner,
+                                    info.group,
+                                    info.size,
+                                    info.mod_time,
+                                    info.name);
+                        }
+                        else //invisivel e -a
+                        {
+                            printf("%s\t", dir->d_name);
+                            contador++;
+                        }
                     }
                 }
                 else if (flag_l)//visivel e -l (tanto faz se for -a ou nao)
