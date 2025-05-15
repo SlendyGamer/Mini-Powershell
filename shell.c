@@ -9,7 +9,7 @@
 
 void execute_cmd(char *linha)
 {
-    char **args = divide_linha(linha, " \t\n"); //divide a linhad e comando digitada pelos espacos
+    char **args = split_line(linha, " \t\n"); //divide a linhad e comando digitada pelos espacos
     if (args[0] == NULL)    //se a primeira palavra for nula, libera args e nao faz nada
     {
         free_tokens(args);
