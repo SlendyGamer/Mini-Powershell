@@ -10,12 +10,14 @@
 void execute_cmd(char *linha)
 {
     char **args = split_line(linha, " \t\n"); //divide a linhad e comando digitada pelos espacos
+    //char *temp = args[1];
+    //printf("%s", temp);
     if (args[0] == NULL)    //se a primeira palavra for nula, libera args e nao faz nada
     {
         free_tokens(args);
         return;
     }
-
+    //printf("printar\n");
     if (is_builtin(args[0])) //se for cd, exit ou pwd, retorna 1
     {
         execute_builtin(args);  //redireciona para os arquivos builtins para execucao

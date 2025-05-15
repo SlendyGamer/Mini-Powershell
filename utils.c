@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "utils.h"
+#include <stdio.h>
 
 char **split_line(char *line, const char *delim) 
 {
