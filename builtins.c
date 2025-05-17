@@ -48,7 +48,6 @@ void execute_builtin(char **args) //executa funcoes acima
     {
         DIR *d;
         struct dirent *dir;
-        d = opendir(".");
         int contador = 0;
         FileInfo info;
         int opt;
@@ -78,11 +77,20 @@ void execute_builtin(char **args) //executa funcoes acima
               return;
           }
         }
+        
+        char* path= ".";
+        if(optind < argc){
+          path=args[optind];
+    }
+    d=opendir(path);
 
+      
         if (d)
         {
             while ((dir = readdir(d)) != NULL)
             {
+                if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0) //pula a indicaçao de diretorio atual e pai
+                  continue;
                 if (!flag_a && dir->d_name[0] == '.') //Pula o arquivo invisivel se n tiver a flag
                   continue;
                 if(flag_l)
