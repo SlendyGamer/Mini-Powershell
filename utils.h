@@ -17,5 +17,9 @@ typedef struct FileInfo {
 
 FileInfo getFileInfo(const char *filename);
 void getPermissions(mode_t mode, char *perm_str);
+int outputRedirect(char **args);
+char *getRedirectFilename(char **args);
+void removeRedirectTokens(char **args);
+int redirectStdout(const char *filename);
 
 #endif // UTILS_H_INCLUDED

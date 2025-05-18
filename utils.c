@@ -7,6 +7,8 @@
 #include <grp.h>
 #include <time.h>
 #include <string.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 char **split_line(char *line, const char *delim) 
 {
@@ -87,3 +89,45 @@ FileInfo getFileInfo(const char *filename)
     return info;
 }
 
+int outputRedirect(char **args)
+{
+  for(int i=0; args[i]!=NULL;i++)
+  {
+    if(strcmp(args[i],">") == 0)  return 1;
+  }
+  return 0;
+}
+
+char *getRedirectFilename(char **args)
+{
+  for(int i=0; args[i] != NULL; i++)
+  {
+    if(strcmp(args[i], ">") == 0 && args[i+1] != NULL)  return args[i+1];
+  }
+  return NULL;
+}
+
+void removeRedirectTokens(char **args)
+{
+  for(int i=0; args[i] != NULL; i++)
+  {
+    if(strcmp(args[i], ">") == 0 && args[i+1] != NULL)
+    {
+      args[i] = NULL;
+      args[i+1] = NULL;
+      break;
+    }
+  }
+}
+
+int redirectStdout(const char *filename)
+{
+  int fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+  if (fd < 0){
+    perror("redirectStdout");
+    return -1;
+  }
+  dup2(fd, STDOUT_FILENO);
+  close(fd);
+  return 0;
+}

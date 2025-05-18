@@ -5,6 +5,7 @@
 #include <sys/wait.h>
 #include "shell.h"
 #include "builtins.h"
+#include "external.h"
 #include "utils.h"
 
 void execute_cmd(char *linha)
@@ -20,7 +21,11 @@ void execute_cmd(char *linha)
     //printf("printar\n");
     if (is_builtin(args[0])) //se for cd, exit ou pwd, retorna 1
     {
-        execute_builtin(args);  //redireciona para os arquivos builtins para execucao
+      execute_builtin(args);  //redireciona para os arquivos builtins para execucao
+    }
+    else if(is_external(args[0]))
+    {
+      execute_external(args);
     }
     else //se o comando for qualquer outro, cria um processo para executa-lo
     {

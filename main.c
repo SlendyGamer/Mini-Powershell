@@ -14,7 +14,7 @@ int main(int argc, char **argv)
         char cwd[1024];
         if (getcwd(cwd, sizeof(cwd)) != NULL)  //pega a localização atual do diretorio
         {
-            printf("\n%s >:", cwd);
+            printf("\n%s >: ", cwd);
         }else{
         perror("getcwd");
         printf("\n>: ");
