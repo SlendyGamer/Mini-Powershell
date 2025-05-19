@@ -9,7 +9,7 @@
 
 int is_external(char *cmd) 
 {
-    return (strcmp(cmd, "ls") == 0); //confere se o que foi digitado eh uma destas funcoes
+    return (strcmp(cmd, "ls") == 0 || strcmp(cmd, "cat")); //confere se o que foi digitado eh uma destas funcoes
 }
 
 void execute_external(char **args)
@@ -96,5 +96,21 @@ void execute_external(char **args)
     {
       perror("ls");
     }
+  }else if(strcmp(args[0],"cat") == 0)
+  {
+    FILE *fptr = fopen(args[1],"r");
+    if(fptr == NULL)
+    {
+      printf("Erro ao abrir o arquivo ou arquivo nao existente.");
+    }
+
+    char buff[100];
+    size_t n;
+    while((n = fread(buff, sizeof(char), sizeof(buff) -1, fptr)) > 0)
+    {
+      buff[n]='\0';
+      printf("%s",buff);
+    }
+    fclose(fptr);
   }
 }
