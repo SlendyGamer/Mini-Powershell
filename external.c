@@ -33,21 +33,15 @@ void execute_external(char **args)
     optarg = NULL;
     optopt = 0;
 
-    for (int i = 0; i < argc; i++) {
-    printf("args[%d] = '%s'\n", i, args[i]);
-    }
     while((opt = getopt(argc, args, "al")) != -1)
     {
-      printf("opt: %c\n", opt);
       switch(opt)
       {
         case 'a':
           flag_a = true;
-          printf("a\n");
           break;
         case 'l':
           flag_l = true;
-          printf("l\n");
           break;
         default:
           fprintf(stderr, "Uso: ls [-a/l] [diretorio]\n");
@@ -65,15 +59,13 @@ void execute_external(char **args)
 
     if (d)
     {
-      printf("flag_a: %d\n", flag_a); // imprime 1
-      printf("flag_l: %d\n", flag_l); // imprime 0
       while ((dir = readdir(d)) != NULL)
       {
         if (!flag_a && dir->d_name[0] == '.') //Pula o arquivo invisivel se n tiver a flag
           continue;
 
-        //if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0) //pula a indicaçao de diretorio atual e pai
-        //  continue;
+        if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0) //pula a indicaçao de diretorio atual e pai
+          continue;
 
         if(flag_l)
         {

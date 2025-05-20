@@ -18,6 +18,27 @@ void execute_cmd(char *linha)
         free_tokens(args);
         return;
     }
+
+    int stdout_redirected = 0;  //salva o estado anterior
+    int saved_stdout = -1;      //salva o stdout em si
+    
+    if (outputRedirect(args))
+    {
+      char* filename = getRedirectFilename(args);
+      if(filename != NULL)
+      {
+        saved_stdout = dup(STDOUT_FILENO);
+        if (redirectStdout(filename) == 0)
+        {
+          stdout_redirected = 1;
+          removeRedirectTokens(args);
+        }else{
+          fprintf(stderr, "Erro ao direcionar saida\n");
+          free_tokens(args);
+          return;
+        }
+      }
+    }
     //printf("printar\n");
     if (is_builtin(args[0])) //se for cd, exit ou pwd, retorna 1
     {
@@ -40,6 +61,12 @@ void execute_cmd(char *linha)
         {
             wait(NULL);
         }
+    }
+    
+    if(stdout_redirected) //se ocorreu o redirecionamento, retorna para o stdout padrao
+    {
+      dup2(saved_stdout, STDOUT_FILENO);
+      close(saved_stdout);
     }
 
     free_tokens(args);

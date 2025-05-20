@@ -1,0 +1,4 @@
+README.md	builtins.h	shell.h	utils.h	utils.c	
+utils.o	external.h	Makefile	builtins.c	builtins.o	
+main.c	main.o	external.c	external.o	shell.c	
+shell.o	minishell	teste.txt	
