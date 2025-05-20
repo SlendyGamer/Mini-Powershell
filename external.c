@@ -21,7 +21,6 @@ void execute_external(char **args)
     int contador = 0;
     FileInfo info;
     int opt;
-   
 
     int argc = 0;
     bool flag_a = false;
@@ -29,26 +28,33 @@ void execute_external(char **args)
 
     while(args[argc] != NULL){argc++;}  
     
-    optind = 1; //reset das variaveis globais do getopt
+    optind = 0; //reset das variaveis globais do getopt
     opterr = 0;
     optarg = NULL;
     optopt = 0;
-    
+
+    for (int i = 0; i < argc; i++) {
+    printf("args[%d] = '%s'\n", i, args[i]);
+    }
     while((opt = getopt(argc, args, "al")) != -1)
     {
+      printf("opt: %c\n", opt);
       switch(opt)
       {
         case 'a':
           flag_a = true;
+          printf("a\n");
           break;
         case 'l':
           flag_l = true;
+          printf("l\n");
           break;
         default:
           fprintf(stderr, "Uso: ls [-a/l] [diretorio]\n");
           return;
       }
     }
+    
         
     char* path= ".";
     if(optind < argc){
@@ -56,16 +62,18 @@ void execute_external(char **args)
     }
 
     d=opendir(path);
-  
+
     if (d)
     {
+      printf("flag_a: %d\n", flag_a); // imprime 1
+      printf("flag_l: %d\n", flag_l); // imprime 0
       while ((dir = readdir(d)) != NULL)
       {
         if (!flag_a && dir->d_name[0] == '.') //Pula o arquivo invisivel se n tiver a flag
           continue;
 
-        if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0) //pula a indicaçao de diretorio atual e pai
-          continue;
+        //if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0) //pula a indicaçao de diretorio atual e pai
+        //  continue;
 
         if(flag_l)
         {
