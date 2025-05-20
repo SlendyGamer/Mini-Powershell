@@ -12,9 +12,15 @@ int main(int argc, char **argv)
     while (1)
     {
         char cwd[1024];
+        char *home = getenv("HOME");
         if (getcwd(cwd, sizeof(cwd)) != NULL)  //pega a localização atual do diretorio
         {
-            printf("\n%s >: ", cwd);
+          if(home != NULL && strncmp(cwd, home, strlen(home)) == 0)
+        {
+          printf("\n ~%s >: ", cwd + strlen(home));
+        }else{
+          printf("\n%s >: ", cwd);
+        }
         }else{
         perror("getcwd");
         printf("\n>: ");
