@@ -9,7 +9,7 @@
 
 int is_builtin(char *cmd) 
 {
-    return (strcmp(cmd, "cd") == 0 || strcmp(cmd, "exit") == 0 || strcmp(cmd, "pwd") == 0); //confere se o que foi digitado eh uma destas funcoes
+    return (strcmp(cmd, "cd") == 0 || strcmp(cmd, "pwd") == 0); //confere se o que foi digitado eh uma destas funcoes
 }
 
 void execute_builtin(char **args) //executa funcoes acima
@@ -27,10 +27,6 @@ void execute_builtin(char **args) //executa funcoes acima
                 perror("cd");
             }
         }
-    }
-    else if (strcmp(args[0], "exit") == 0) 
-    {
-        exit(0); //finaliza powershell
     }
     else if (strcmp(args[0], "pwd") == 0) 
     {
