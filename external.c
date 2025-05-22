@@ -9,7 +9,7 @@
 
 int is_external(char *cmd) 
 {
-    return (strcmp(cmd, "ls") == 0 || strcmp(cmd, "cat")); //confere se o que foi digitado eh uma destas funcoes
+    return (strcmp(cmd, "ls") == 0 || strcmp(cmd, "cat") == 0); //confere se o que foi digitado eh uma destas funcoes
 }
 
 void execute_external(char **args)
