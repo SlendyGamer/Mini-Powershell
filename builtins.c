@@ -27,6 +27,7 @@ void execute_builtin(char **args) //executa funcoes acima
                 perror("cd");
             }
         }
+      return;
     }
     else if (strcmp(args[0], "pwd") == 0) 
     {
