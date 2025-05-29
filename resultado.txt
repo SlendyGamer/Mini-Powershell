@@ -1,0 +1,4 @@
+int main(int argc, char *argv[]) {
+    for (int i = 1; i < argc; i++) {                                                                   // percorre todos os argumentos passados por linha de comando
+        for (int j = 0; arg[j] != '\0'; j++) {                                                                                            
+                fprintf(stderr, "Erro: '%s' nao eh um numero inteiro positivo valido.\n", arg);        // se nao for DIGITO POSITIVO OU ZERO = ERRO

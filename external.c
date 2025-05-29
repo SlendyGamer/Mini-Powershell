@@ -5,16 +5,33 @@
 #include <dirent.h> 
 #include "external.h"
 #include "utils.h"
+#include "builtins.h"
 #include <stdbool.h>
 #include <sys/wait.h>
 
 int is_external(char *cmd) 
 {
-    return (strcmp(cmd, "ls") == 0 || strcmp(cmd, "cat") == 0); //confere se o que foi digitado eh uma destas funcoes
+    return !is_builtin(cmd);
+    //int result = (strcmp(cmd, "ls") == 0 || strcmp(cmd, "cat") == 0);
+    //printf("[DEBUG] is_external('%s') = %d\n", cmd, result);
+    //return result;
 }
 
 void execute_external(char **args)
 {
+  if (args[0][0] == '.' || args[0][0] == '/') {
+    if (access(args[0], X_OK) == 0) {
+        printf("[DEBUG] Executando (com caminho direto): %s\n", args[0]);
+        execv(args[0], args);
+        perror("execv");  // Só chega aqui se execv falhar
+        exit(EXIT_FAILURE);
+    } else {
+        fprintf(stderr, "Erro: arquivo '%s' não encontrado ou sem permissão de execução.\n", args[0]);
+        exit(EXIT_FAILURE);
+    }
+}
+
+  
   if (strcmp(args[0],"ls") == 0)
   {
     DIR *d;
@@ -123,7 +140,7 @@ void execute_external(char **args)
       }
 
       char *path_copy = strdup(path_env);                                       // copia a string para "path copy"
-      char *dir = strtok(path_copy, ";");                                       // divide a string "path_copy" em tokens separados por ";"
+      char *dir = strtok(path_copy, ":");                                       // divide a string "path_copy" em tokens separados por ";" //nao seria ":"??
 
       char fullpath[1024];                                                  
       int found = 0;
@@ -136,16 +153,16 @@ void execute_external(char **args)
               break;
           }
 
-          dir = strtok(NULL, ";");                                              // vai para o proximo diretorio separado por ";"
+          dir = strtok(NULL, ":");                                              // vai para o proximo diretorio separado por ";"
       }
 
-      if (!found) {                                                             // Se nao achou no PATH, tenta no diretorio atual
+      /*if (!found) {                                                             // Se nao achou no PATH, tenta no diretorio atual
           snprintf(fullpath, sizeof(fullpath), "./%s", args[0]);                // monta o caminho completo do executavel, combinando o diretorio atual com o comando
 
           if (access(fullpath, X_OK) == 0) {                                    //verfica se o arquivo existe em determinado caminho
               found = 1;
           }
-      }
+      }*/
 
       if (!found) {
           fprintf(stderr, "Erro: comando '%s' nao encontrado.\n", args[0]);     // se o executavel nao foi encontrado em nenhum dos caminhos PATh, nem no diretorio atual = ERRO
@@ -153,29 +170,12 @@ void execute_external(char **args)
           return;
       }
 
-      pid_t pid = fork();                                                        // executa o programa em um novo processo
+      //printf("[DEBUG] PATH completo: %s\n", path_env);
 
-      if (pid < 0) { 
-          perror("fork");                                                        // se retornar NEGATIVO = ERRO
-          free(path_copy);                                                       // libera a memoria alocada
-          return;
-      }
-
-      if (pid == 0) {
-          execv(fullpath, args);                                                 // executa o executavel
-          perror("execv");                                                       // se execucao falhar = ERRO
-          exit(EXIT_FAILURE);                                                    // encerra o processo com mensagem de ERRO
-      }else {
-
-        int status;                                                               
-        waitpid(pid, &status, 0);                                                // aguarda o processo filho terminar e recebe seu "status"
-
-        if (WIFEXITED(status)) {                                                 // entra no if se executou NORMALMENTE
-            printf("Codigo de saida: %d", WEXITSTATUS(status));                // imprime ZERO se deu tudo CERTO, imprime UM se deu ERRO
-        }
-    }
+      execv(fullpath, args);                                                 // executa o executavel
+      perror("execv");                                                       // se execucao falhar = ERRO
+      exit(EXIT_FAILURE);
 
       free(path_copy);                                                           // libera a memoria alocada
-  }
-    
+  }    
 }
