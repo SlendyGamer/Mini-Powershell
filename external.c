@@ -6,6 +6,7 @@
 #include "external.h"
 #include "utils.h"
 #include <stdbool.h>
+#include <sys/wait.h>
 
 int is_external(char *cmd) 
 {
@@ -113,4 +114,68 @@ void execute_external(char **args)
     }
     fclose(fptr);
   }
+  else{
+    char *path_env = getenv("PATH");
+
+      if (!path_env) {                                                          // verifica se a variavel "path" eh definida 
+          fprintf(stderr, "Erro: variavel de ambiente PATH nao definida.\n");   // se nao for definida = ERRO
+          return;
+      }
+
+      char *path_copy = strdup(path_env);                                       // copia a string para "path copy"
+      char *dir = strtok(path_copy, ";");                                       // divide a string "path_copy" em tokens separados por ";"
+
+      char fullpath[1024];                                                  
+      int found = 0;
+
+      while (dir != NULL) {                                                     // verifica todos os diretorio na 
+          snprintf(fullpath, sizeof(fullpath), "%s/%s", dir, args[0]);          // monta o caminho completo do executavel, combinando o diretorio atual com o comando
+
+          if (access(fullpath, X_OK) == 0) {                                    //verfica se o arquivo existe em determinado caminho
+              found = 1;
+              break;
+          }
+
+          dir = strtok(NULL, ";");                                              // vai para o proximo diretorio separado por ";"
+      }
+
+      if (!found) {                                                             // Se nao achou no PATH, tenta no diretorio atual
+          snprintf(fullpath, sizeof(fullpath), "./%s", args[0]);                // monta o caminho completo do executavel, combinando o diretorio atual com o comando
+
+          if (access(fullpath, X_OK) == 0) {                                    //verfica se o arquivo existe em determinado caminho
+              found = 1;
+          }
+      }
+
+      if (!found) {
+          fprintf(stderr, "Erro: comando '%s' nao encontrado.\n", args[0]);     // se o executavel nao foi encontrado em nenhum dos caminhos PATh, nem no diretorio atual = ERRO
+          free(path_copy);
+          return;
+      }
+
+      pid_t pid = fork();                                                        // executa o programa em um novo processo
+
+      if (pid < 0) { 
+          perror("fork");                                                        // se retornar NEGATIVO = ERRO
+          free(path_copy);                                                       // libera a memoria alocada
+          return;
+      }
+
+      if (pid == 0) {
+          execv(fullpath, args);                                                 // executa o executavel
+          perror("execv");                                                       // se execucao falhar = ERRO
+          exit(EXIT_FAILURE);                                                    // encerra o processo com mensagem de ERRO
+      }else {
+
+        int status;                                                               
+        waitpid(pid, &status, 0);                                                // aguarda o processo filho terminar e recebe seu "status"
+
+        if (WIFEXITED(status)) {                                                 // entra no if se executou NORMALMENTE
+            printf("Codigo de saida: %d", WEXITSTATUS(status));                // imprime ZERO se deu tudo CERTO, imprime UM se deu ERRO
+        }
+    }
+
+      free(path_copy);                                                           // libera a memoria alocada
+  }
+    
 }

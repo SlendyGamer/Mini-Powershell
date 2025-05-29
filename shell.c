@@ -35,7 +35,8 @@ void execute_cmd(char *linha)
             char **args = split_line(pipe_cmds[j], " \t\n");    //separa cada comando por palavras
             if (args[0] == NULL) {    //se aconteceu algum erro ou nao tiver o comando ele finaliza
               free_tokens(args);
-              exit(0);
+              continue;
+
             }
             if(strcmp(args[0], "exit")==0)    //se o comando for exit, ele da free em tudo e finaliza
             {
@@ -43,6 +44,22 @@ void execute_cmd(char *linha)
               free_tokens(pipe_cmds);
               free_tokens(comandos);
               exit(0);
+            }
+            
+            if(!flag_pipe && is_builtin(args[0]))   //se nao tiver pipe e for builtin, executa no processo princial
+            {
+              execute_builtin(args);
+              free_tokens(args);
+              continue;
+            }
+            
+            if(flag_pipe && j < n-1)  //se for comando com pipe e nao for ultimo, cria o pipr
+            {
+              if(pipe(pipefd) == -1)
+              {
+                perror("pipe");
+                exit(1);
+              }
             }
 
             pid_t pid = fork();     //cria o filho
@@ -143,4 +160,3 @@ void execute_cmd(char *linha)
     while(wait(NULL) > 0);    //espera todos processos finalizarem e da free
     free_tokens(comandos);
 }
-
