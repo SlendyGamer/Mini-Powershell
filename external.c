@@ -19,18 +19,6 @@ int is_external(char *cmd)
 
 void execute_external(char **args)
 {
-  if (args[0][0] == '.' || args[0][0] == '/') {
-    if (access(args[0], X_OK) == 0) {
-        printf("[DEBUG] Executando (com caminho direto): %s\n", args[0]);
-        execv(args[0], args);
-        perror("execv");  // Só chega aqui se execv falhar
-        exit(EXIT_FAILURE);
-    } else {
-        fprintf(stderr, "Erro: arquivo '%s' não encontrado ou sem permissão de execução.\n", args[0]);
-        exit(EXIT_FAILURE);
-    }
-}
-
   
   if (strcmp(args[0],"ls") == 0)
   {
@@ -131,51 +119,38 @@ void execute_external(char **args)
     }
     fclose(fptr);
   }
-  else{
-    char *path_env = getenv("PATH");
+  else {
+      extern char caminho_salvo[1024];
+      char caminho_completo[1024];
 
-      if (!path_env) {                                                          // verifica se a variavel "path" eh definida 
-          fprintf(stderr, "Erro: variavel de ambiente PATH nao definida.\n");   // se nao for definida = ERRO
-          return;
-      }
+      
+      if (strlen(caminho_salvo) > 0) {
 
-      char *path_copy = strdup(path_env);                                       // copia a string para "path copy"
-      char *dir = strtok(path_copy, ":");                                       // divide a string "path_copy" em tokens separados por ";" //nao seria ":"??
+          snprintf(caminho_completo, sizeof(caminho_completo), "%s/%s", caminho_salvo, args[0]); //tenta executar no caminho salvo se existir
 
-      char fullpath[1024];                                                  
-      int found = 0;
+          if (access(caminho_completo, X_OK) == 0) {
 
-      while (dir != NULL) {                                                     // verifica todos os diretorio na 
-          snprintf(fullpath, sizeof(fullpath), "%s/%s", dir, args[0]);          // monta o caminho completo do executavel, combinando o diretorio atual com o comando
+              fprintf(stderr, "comando '%s' ENCONTRADO via PATH %s resultado: \n", args[0], caminho_salvo);
+              execv(caminho_completo, args);
+              perror("execv");
+              exit(EXIT_FAILURE);
+          }else{
 
-          if (access(fullpath, X_OK) == 0) {                                    //verfica se o arquivo existe em determinado caminho
-              found = 1;
-              break;
+            fprintf(stderr, "comando '%s' NAO encontrado em PATH SALVO: %s\n", args[0], caminho_salvo);
+
           }
-
-          dir = strtok(NULL, ":");                                              // vai para o proximo diretorio separado por ";"
       }
 
-      /*if (!found) {                                                             // Se nao achou no PATH, tenta no diretorio atual
-          snprintf(fullpath, sizeof(fullpath), "./%s", args[0]);                // monta o caminho completo do executavel, combinando o diretorio atual com o comando
+      snprintf(caminho_completo, sizeof(caminho_completo), "./%s", args[0]); //tenta executar no diretório atual
 
-          if (access(fullpath, X_OK) == 0) {                                    //verfica se o arquivo existe em determinado caminho
-              found = 1;
-          }
-      }*/
-
-      if (!found) {
-          fprintf(stderr, "Erro: comando '%s' nao encontrado.\n", args[0]);     // se o executavel nao foi encontrado em nenhum dos caminhos PATh, nem no diretorio atual = ERRO
-          free(path_copy);
-          return;
+      if (access(caminho_completo, X_OK) == 0) {
+          fprintf(stderr, "comando '%s' ENCONTRADO no DIRETORIO ATUAL resultado: \n", args[0]);
+          execv(caminho_completo, args);
+          perror("execv");
+          exit(EXIT_FAILURE);
+      }else{
+        fprintf(stderr, "comando '%s' NAO encontrado no DIRETORIO ATUAL.\n", args[0]);
       }
 
-      //printf("[DEBUG] PATH completo: %s\n", path_env);
-
-      execv(fullpath, args);                                                 // executa o executavel
-      perror("execv");                                                       // se execucao falhar = ERRO
-      exit(EXIT_FAILURE);
-
-      free(path_copy);                                                           // libera a memoria alocada
-  }    
+  }
 }
