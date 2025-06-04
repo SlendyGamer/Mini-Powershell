@@ -41,7 +41,7 @@ void execute_cmd(char *linha)
             if(strcmp(args[0], "exit")==0)    //se o comando for exit, ele da free em tudo e finaliza
             {
               freee_tokens(args);//teste
-              freee_tokens(pipe_cmds);//teste
+              free_tokens(pipe_cmds);//teste
               free_tokens(comandos);//teste
               exit(0);
             }
@@ -154,7 +154,7 @@ void execute_cmd(char *linha)
         if (in_fd != 0)   //fecha o restante
             close(in_fd);
 
-        freee_tokens(pipe_cmds);   //fecha o pipe //teste
+        free_tokens(pipe_cmds);   //fecha o pipe //teste
     }
 
     while(wait(NULL) > 0);    //espera todos processos finalizarem e da free
