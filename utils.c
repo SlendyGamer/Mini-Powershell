@@ -65,6 +65,31 @@ char **split_linee(const char *line) {
     }
 
     tokens[position] = NULL;
+
+    if (position > 0 && strcmp(tokens[0], "grep") == 0) {//teste
+        // verifica se já tem --color
+        int has_color = 0;
+        for (int i = 1; i < position; i++) {
+            if (strstr(tokens[i], "--color") != NULL) {
+                has_color = 1;
+                break;
+            }
+        }
+
+        if (!has_color) {
+            // realoca para um espaço extra
+            tokens = realloc(tokens, (position + 2) * sizeof(char*)); 
+            // Move todos os argumentos para a frente para abrir espaço em tokens[1]
+            for (int i = position; i > 0; i--) {
+                tokens[i] = tokens[i - 1];
+            }
+            // Insere o --color=always em tokens[1]
+            tokens[1] = strdup("--color=always");
+            position++;
+            tokens[position] = NULL;
+        }
+    }//teste
+
     return tokens;
 } //teste
 
