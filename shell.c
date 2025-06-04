@@ -32,24 +32,24 @@ void execute_cmd(char *linha)
                 }
             }
           
-            char **args = split_line(pipe_cmds[j], " \t\n");    //separa cada comando por palavras
+            char **args = split_linee(pipe_cmds[j]);    //separa cada comando por palavras//teste
             if (args[0] == NULL) {    //se aconteceu algum erro ou nao tiver o comando ele finaliza
-              free_tokens(args);
+              freee_tokens(args);//teste
               continue;
 
             }
             if(strcmp(args[0], "exit")==0)    //se o comando for exit, ele da free em tudo e finaliza
             {
-              free_tokens(args);
-              free_tokens(pipe_cmds);
-              free_tokens(comandos);
+              freee_tokens(args);//teste
+              freee_tokens(pipe_cmds);//teste
+              free_tokens(comandos);//teste
               exit(0);
             }
             
             if(!flag_pipe && is_builtin(args[0]))   //se nao tiver pipe e for builtin, executa no processo princial
             {
               execute_builtin(args);
-              free_tokens(args);
+              freee_tokens(args);//teste
               continue;
             }
             
@@ -93,7 +93,7 @@ void execute_cmd(char *linha)
                                 removeRedirectTokens(args);
                             } else {
                                 fprintf(stderr, "Erro ao direcionar saida\n");
-                                free_tokens(args);
+                                freee_tokens(args);//teste
                                 exit(1);
                             }
                         }
@@ -105,7 +105,7 @@ void execute_cmd(char *linha)
                             dup2(saved_stdout, STDOUT_FILENO);
                             close(saved_stdout);
                         }
-                        free_tokens(args);
+                        freee_tokens(args);//teste
                         exit(0);
                     } else if (is_external(args[0])) {    //verifica se tem externo, se tiver executa, se nao tiver ele manda para o terminal principal, nao para nosso shell
                         execute_external(args);
@@ -119,13 +119,13 @@ void execute_cmd(char *linha)
                         close(saved_stdout);
                     }
 
-                    free_tokens(args);
+                    freee_tokens(args);//teste
                     exit(1);
                 } else {
                     // Para os comandos no meio do pipe, executa normal (builtin ou external)
                     if (is_builtin(args[0])) {
                         execute_builtin(args);
-                        free_tokens(args);
+                        freee_tokens(args);//teste
                         exit(0);
                     }else if (is_external(args[0])) {
                         execute_external(args);
@@ -133,7 +133,7 @@ void execute_cmd(char *linha)
                         execvp(args[0], args);
                         perror("execvp");
                     }
-                    free_tokens(args);
+                    freee_tokens(args);//teste
                     exit(1);
                 }
             } else if (pid > 0) {
@@ -154,7 +154,7 @@ void execute_cmd(char *linha)
         if (in_fd != 0)   //fecha o restante
             close(in_fd);
 
-        free_tokens(pipe_cmds);   //fecha o pipe
+        freee_tokens(pipe_cmds);   //fecha o pipe //teste
     }
 
     while(wait(NULL) > 0);    //espera todos processos finalizarem e da free

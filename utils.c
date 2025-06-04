@@ -31,10 +31,57 @@ char **split_line(char *line, const char *delim)
     return tokens;
 }
 
+char **split_linee(const char *line) {
+    int bufsize = 64, position = 0;
+    char **tokens = malloc(bufsize * sizeof(char*));
+    const char *ptr = line;
+
+    while (*ptr) {
+        // Pula espaços
+        while (*ptr == ' ' || *ptr == '\t' || *ptr == '\n') ptr++;
+        if (*ptr == '\0') break;
+
+        char *token = malloc(1024);
+        int i = 0;
+
+        if (*ptr == '"') {
+            ptr++; // pula a primeira aspa
+            while (*ptr && *ptr != '"') {
+                token[i++] = *ptr++;
+            }
+            if (*ptr == '"') ptr++; // pula a última aspa
+        } else {
+            while (*ptr && *ptr != ' ' && *ptr != '\t' && *ptr != '\n') {
+                token[i++] = *ptr++;
+            }
+        }
+        token[i] = '\0';
+        tokens[position++] = token;
+
+        if (position >= bufsize) {
+            bufsize += 64;
+            tokens = realloc(tokens, bufsize * sizeof(char*));
+        }
+    }
+
+    tokens[position] = NULL;
+    return tokens;
+} //teste
+
+
 void free_tokens(char **tokens) 
 {
     free(tokens);
 }
+
+void freee_tokens(char **tokens) 
+{
+    if (!tokens) return;
+    for (int i = 0; tokens[i] != NULL; i++) {
+        free(tokens[i]);  // libera cada string individual
+    }
+    free(tokens); // libera o vetor de ponteiros
+} //teste
 
 void getPermissions(mode_t mode, char *perm_str) {
     perm_str[0] = S_ISDIR(mode) ? 'd' :
@@ -54,6 +101,13 @@ void getPermissions(mode_t mode, char *perm_str) {
     perm_str[8] = (mode & S_IWOTH) ? 'w' : '-';
     perm_str[9] = (mode & S_IXOTH) ? 'x' : '-';
     perm_str[10] = '\0';
+}
+
+int check_path_buffer(char *destino, size_t tamanho, const char *prefixo, const char *comando) {
+    if (strlen(prefixo) + strlen(comando) + 2 > tamanho)
+        return -1;
+    snprintf(destino, tamanho, "%s/%s", prefixo, comando);
+    return 0;
 }
 
 FileInfo getFileInfo(const char *filename)

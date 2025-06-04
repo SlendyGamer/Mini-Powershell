@@ -2,8 +2,10 @@
 #define UTILS_H_INCLUDED
 
 char **split_line(char *line, const char *delim);
+char **split_linee(const char *line); //teste
 void free_tokens(char **tokens);
-
+void freee_tokens(char **tokens); //teste
+int check_path_buffer(char *destino, size_t tamanho, const char *prefixo, const char *comando);
 
 typedef struct FileInfo {
     char permissions[11];      // Ex: -rw-r--r--
