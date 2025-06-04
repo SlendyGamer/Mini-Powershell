@@ -5,15 +5,21 @@
 #include <dirent.h> 
 #include "external.h"
 #include "utils.h"
+#include "builtins.h"
 #include <stdbool.h>
+#include <sys/wait.h>
 
 int is_external(char *cmd) 
 {
-    return (strcmp(cmd, "ls") == 0 || strcmp(cmd, "cat")); //confere se o que foi digitado eh uma destas funcoes
+    return !is_builtin(cmd);
+    //int result = (strcmp(cmd, "ls") == 0 || strcmp(cmd, "cat") == 0);
+    //printf("[DEBUG] is_external('%s') = %d\n", cmd, result);
+    //return result;
 }
 
 void execute_external(char **args)
 {
+  
   if (strcmp(args[0],"ls") == 0)
   {
     DIR *d;
@@ -112,5 +118,88 @@ void execute_external(char **args)
       printf("%s",buff);
     }
     fclose(fptr);
+  }
+  else {
+      extern char caminho_salvo[1024];
+      char caminho_completo[1024];
+
+      if (args[0][0] == '.' || args[0][0] == '/') {
+        if (access(args[0], X_OK) == 0) {
+            printf("[DEBUG] Executando (com caminho direto): %s\n", args[0]);
+            execv(args[0], args);
+            perror("execv");
+            exit(EXIT_FAILURE);
+        } else {
+            fprintf(stderr, "Erro: arquivo '%s' não encontrado ou sem permissão de execução.\n", args[0]);
+            exit(EXIT_FAILURE);
+        }
+      }
+      
+      if (strlen(caminho_salvo) > 0) {
+        
+        if (check_path_buffer(caminho_completo, sizeof(caminho_completo), caminho_salvo, args[0]) < 0) {
+            fprintf(stderr, "Erro: caminho muito longo para o buffer.\n");
+            return;
+        }
+
+          if (access(caminho_completo, X_OK) == 0) {
+
+              fprintf(stderr, "comando '%s' ENCONTRADO via PATH %s resultado: \n", args[0], caminho_salvo);
+              execv(caminho_completo, args);
+              perror("execv");
+              exit(EXIT_FAILURE);
+          }else{
+
+            fprintf(stderr, "comando '%s' NAO encontrado em PATH SALVO: %s\n", args[0], caminho_salvo);
+
+          }
+      }
+
+      char *path_env = getenv("PATH");
+    if (!path_env) {
+        fprintf(stderr, "Erro: variável de ambiente PATH não definida.\n");
+        return;
+    }
+
+    char *path_copy = strdup(path_env);
+    char *dir = strtok(path_copy, ":");
+    int found = 0;
+
+    while (dir != NULL) {
+      if (check_path_buffer(caminho_completo, sizeof(caminho_completo), dir, args[0]) < 0) {
+            fprintf(stderr, "Erro: caminho gerado pelo PATH muito longo para o buffer.\n");
+            dir = strtok(NULL, ":");
+            continue;
+        }
+        if (access(caminho_completo, X_OK) == 0) {  // <-- testa se o comando é executável aqui
+        found = 1;
+        break;  // <-- comando encontrado, sai do loop
+    }
+        dir = strtok(NULL, ":");
+    }
+
+    if (found) {
+        fprintf(stderr, "[DEBUG] comando '%s' encontrado no PATH do sistema.\n", args[0]);
+        execv(caminho_completo, args);
+        perror("execv");
+        exit(EXIT_FAILURE);
+    } else {
+        fprintf(stderr, "Erro: comando '%s' não encontrado.\n", args[0]);
+    }
+
+    free(path_copy);
+
+    /* 
+      snprintf(caminho_completo, sizeof(caminho_completo), "./%s", args[0]); //tenta executar no diretório atual
+
+      if (access(caminho_completo, X_OK) == 0) {
+          fprintf(stderr, "comando '%s' ENCONTRADO no DIRETORIO ATUAL resultado: \n", args[0]);
+          execv(caminho_completo, args);
+          perror("execv");
+          exit(EXIT_FAILURE);
+      }else{
+        fprintf(stderr, "comando '%s' NAO encontrado no DIRETORIO ATUAL.\n", args[0]);
+      }
+    */
   }
 }

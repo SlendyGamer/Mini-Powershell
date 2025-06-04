@@ -1,0 +1,2 @@
+[DEBUG] is_external('grep') = 0
+int main(int argc, char *argv[]) {

@@ -17,13 +17,13 @@ int main(int argc, char **argv)
         {
           if(home != NULL && strncmp(cwd, home, strlen(home)) == 0)
         {
-          printf("\n ~%s >: ", cwd + strlen(home));
+          printf("\n ~%s > ", cwd + strlen(home));
         }else{
-          printf("\n%s >: ", cwd);
+          printf("\n%s > ", cwd);
         }
         }else{
         perror("getcwd");
-        printf("\n>: ");
+        printf("\n> ");
     }
         if(getline(&linha, &tam_linha, stdin) == -1) //funcao getlinha recebe entradas de stdin e salva o que foi escrito e o numero de caracteres nas suas respectivas variaveis
         break; //se houver erro no ou for detectado EOF (crtl+d)
