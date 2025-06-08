@@ -11,10 +11,7 @@
 
 int is_external(char *cmd) 
 {
-    return !is_builtin(cmd);
-    //int result = (strcmp(cmd, "ls") == 0 || strcmp(cmd, "cat") == 0);
-    //printf("[DEBUG] is_external('%s') = %d\n", cmd, result);
-    //return result;
+  return !is_builtin(cmd);
 }
 
 void execute_external(char **args)
@@ -188,18 +185,6 @@ void execute_external(char **args)
     }
 
     free(path_copy);
-
-    /* 
-      snprintf(caminho_completo, sizeof(caminho_completo), "./%s", args[0]); //tenta executar no diretório atual
-
-      if (access(caminho_completo, X_OK) == 0) {
-          fprintf(stderr, "comando '%s' ENCONTRADO no DIRETORIO ATUAL resultado: \n", args[0]);
-          execv(caminho_completo, args);
-          perror("execv");
-          exit(EXIT_FAILURE);
-      }else{
-        fprintf(stderr, "comando '%s' NAO encontrado no DIRETORIO ATUAL.\n", args[0]);
-      }
-    */
+    
   }
 }
