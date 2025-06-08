@@ -66,7 +66,7 @@ char **split_linee(const char *line) {
 
     tokens[position] = NULL;
 
-    if (position > 0 && strcmp(tokens[0], "grep") == 0) {//teste
+    if (position > 0 && strcmp(tokens[0], "grep") == 0) {
         // verifica se já tem --color
         int has_color = 0;
         for (int i = 1; i < position; i++) {
@@ -88,10 +88,10 @@ char **split_linee(const char *line) {
             position++;
             tokens[position] = NULL;
         }
-    }//teste
+    }
 
     return tokens;
-} //teste
+}
 
 
 void free_tokens(char **tokens) 
@@ -106,7 +106,7 @@ void freee_tokens(char **tokens)
         free(tokens[i]);  // libera cada string individual
     }
     free(tokens); // libera o vetor de ponteiros
-} //teste
+}
 
 void getPermissions(mode_t mode, char *perm_str) {
     perm_str[0] = S_ISDIR(mode) ? 'd' :

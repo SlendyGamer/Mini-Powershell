@@ -59,24 +59,24 @@ void execute_builtin(char **args) //executa funcoes acima
         
         else  //se digitou "path <caminho>" salva o caminho absoluto na variável global "caminho_salvo"
         {
-        char caminho_resolvido[1024];                                         //here
-        const char *entrada = args[1];                                        //here
+        char caminho_resolvido[1024];
+        const char *entrada = args[1];
 
         // se o caminho não começar com '.' ou '/', assume que é relativo ao diretório atual
-        if (entrada[0] != '.' && entrada[0] != '/') {                         //here
-            snprintf(caminho_resolvido, sizeof(caminho_resolvido),           //here
-                     "./%s", entrada);                                        //here
-            entrada = caminho_resolvido;                                     //here
+        if (entrada[0] != '.' && entrada[0] != '/') {
+            snprintf(caminho_resolvido, sizeof(caminho_resolvido),
+                     "./%s", entrada);
+            entrada = caminho_resolvido;
         }  
         
-        char *res = realpath(entrada, caminho_salvo);                         //here
-        if (res == NULL) {                                                   //here
-            perror("realpath");                                              //here
-            fprintf(stderr, "Erro: caminho '%s' inválido ou não encontrado.\n", args[1]); //here
-            caminho_salvo[0] = '\0';                                         //here
-        } else {                                                             //here
-            printf("caminho salvo: %s\n", caminho_salvo);                    //here
-        }                                                                    //here
+        char *res = realpath(entrada, caminho_salvo);
+        if (res == NULL) {
+            perror("realpath");
+            fprintf(stderr, "Erro: caminho '%s' inválido ou não encontrado.\n", args[1]);
+            caminho_salvo[0] = '\0';
+        } else {
+            printf("caminho salvo: %s\n", caminho_salvo);
+        }
         }
     }
 }
