@@ -27,12 +27,12 @@ make
 # Estrutura do projeto
 ```makefile
 Mini-Powershell/
-├──  Makefile/     #Arquivo para compilar todos os arquivos
+├──  Makefile/                #Arquivo para compilar todos os arquivos
 ├──  builtins.c/builtins.h    #Codigo de comandos internos, como cd e pwd
 ├──  external.c/external.h    #Codigo de comandos externos
-├──  main.c    #Codigo principal do shell
-├──  minishell    #executavel
-├──  shell.c/shell.h    #Codigo do shell em si, onde ele é executado
-├──  sum.c    #Codigo simples que faz a soma de dois valores
-├──  utils.c/utils.h    #Codigo de funções auxiliares
+├──  main.c                   #Codigo principal do shell
+├──  minishell                #executavel
+├──  shell.c/shell.h          #Codigo do shell em si, onde ele é executado
+├──  sum.c                    #Codigo simples que faz a soma de dois valores
+├──  utils.c/utils.h          #Codigo de funções auxiliares
 ```
